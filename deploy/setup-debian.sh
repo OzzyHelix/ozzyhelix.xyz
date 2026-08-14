@@ -52,6 +52,13 @@ server {
         add_header Cache-Control "no-store, no-cache, must-revalidate";
     }
 
+    # Serve the license inline instead of downloading it
+    location = /LICENSE {
+        default_type text/plain;
+        add_header Content-Disposition "inline";
+        add_header Cache-Control "no-cache";
+    }
+
     location / {
         try_files \$uri \$uri/ =404;
     }
