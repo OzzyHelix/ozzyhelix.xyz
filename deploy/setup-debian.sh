@@ -23,7 +23,7 @@ fi
 
 echo "==> Installing nginx"
 apt-get update
-apt-get install -y nginx
+apt-get install -y nginx rsync
 
 echo "==> Copying the site"
 mkdir -p "$SITE_DIR"
