@@ -1,0 +1,13 @@
+# Cloudflare Tunnel config for ozzyhelix.xyz
+# Copy to /etc/cloudflared/config.yml after creating your tunnel.
+# The tunnel name and ID below are placeholders — the setup script fills these in.
+
+tunnel: <TUNNEL_ID>
+credentials-file: /etc/cloudflared/<TUNNEL_ID>.json
+
+ingress:
+  - hostname: ozzyhelix.xyz
+    service: http://localhost:80
+  - hostname: www.ozzyhelix.xyz
+    service: http://localhost:80
+  - service: http_status:404
