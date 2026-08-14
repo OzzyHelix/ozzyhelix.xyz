@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Welcome to Ozzy Helix's homepage! Linux, VMs, VFIO, Proxmox, VRChat and more.">
+  <link rel="icon" type="image/png" href="assets/moon2021.png">
+  <title>Ozzy Helix's Homepage</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="construction-bar">Site Under Construction</div>
+
+  <div class="page">
+
+    <header class="header">
+      <div class="logo">
+        <img class="logo__img" src="assets/Ozzy-anime-profile-picture.svg" alt="Ozzy Helix profile picture">
+        <span class="logo__main">Ozzy<span class="logo__hl">Helix</span></span>
+        <span class="logo__tag">the one and only homepage on the web</span>
+      </div>
+      <nav class="nav">
+        <a href="https://github.com/OzzyHelix?tab=repositories" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://bsky.app/profile/ozzyhelix.bsky.social" target="_blank" rel="noopener">BlueSky</a>
+      </nav>
+    </header>
+
+    <main id="top">
+
+      <section id="about" class="panel">
+        <h2 class="section__title">About Me</h2>
+        <p class="section__body">
+          Hi I am Ozzy Helix. I do stuff with Linux, VMs and VFIO/GPU Passthrough.
+          I am experimenting with Cloudflare and hosting stuff on the internet.
+          I love to write guides on GitHub and mostly play games like VRChat and Balatro.
+        </p>
+      </section>
+
+      <section id="tech" class="panel">
+        <h2 class="section__title">Tech I play with</h2>
+        <div class="badges">
+          <span class="badge">ARCH LINUX</span>
+          <a class="badge badge--link" href="https://www.proxmox.com" target="_blank" rel="noopener">PROXMOX</a>
+          <span class="badge">VFIO</span>
+          <span class="badge">VM's</span>
+        </div>
+      </section>
+
+      <section id="games" class="panel">
+        <h2 class="section__title">Games I play with</h2>
+        <div class="badges">
+          <span class="badge">VRChat</span>
+          <span class="badge">Balatro</span>
+          <span class="badge">Buckshot Roulette</span>
+          <span class="badge">Doom</span>
+          <span class="badge">Touhou</span>
+          <span class="badge">Ultrakill</span>
+        </div>
+      </section>
+
+      <section id="work" class="panel">
+        <h2 class="section__title">Stuff I work on</h2>
+        <ul class="stuff">
+          <li class="stuff__item">
+            <div class="stuff__body">
+              <b>Homelab & Proxmox</b><br>
+              I run stuff on Proxmox. with containers and scripts
+            </div>
+          </li>
+          <li class="stuff__item">
+            <div class="stuff__body">
+              <b>VFIO / GPU Passthrough</b><br>
+              Running Windows in a VM with a GPU is interesting and I might have future plans to do it more often
+            </div>
+          </li>
+          <li class="stuff__item">
+            <div class="stuff__body">
+              <b>Guides on GitHub</b><br>
+              Everything I learn goes into a guide somewhere. See below!
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <section id="contact" class="panel">
+        <h2 class="section__title">Find Me Online</h2>
+        <p class="links">
+          <a href="https://github.com/OzzyHelix?tab=repositories" target="_blank" rel="noopener">&#128279; GitHub</a> &middot;
+          <a href="https://bsky.app/profile/ozzyhelix.bsky.social" target="_blank" rel="noopener">&#128279; BlueSky</a>
+        </p>
+      </section>
+
+    </main>
+
+    <footer class="footer">
+      <p>&copy; <span id="year"></span> Ozzy Helix. Licensed under <a href="LICENSE">GPL-2.0</a>.</p>
+    </footer>
+
+  </div>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
