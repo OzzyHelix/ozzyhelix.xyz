@@ -45,9 +45,9 @@ python3 -m http.server 8080
 
 Then open http://localhost:8080.
 
-## Deploy via Cloudflare Tunnel (Debian LXC on Proxmox)
+## Deploy on a Debian LXC container (Proxmox, local NAT)
 
-Serves the site from a container through Cloudflare — no open ports, no certbot, no public IP needed.
+Serves the site from a container on your local network via nginx. Cloudflare Tunnel can be added later.
 
 1. **Copy the site to the container** (from any machine with this repo):
    ```
@@ -57,15 +57,12 @@ Serves the site from a container through Cloudflare — no open ports, no certbo
    ```
    sudo bash /opt/ozzyhelix-site/deploy/setup-debian.sh
    ```
-   It installs nginx + cloudflared, configures nginx, and creates the tunnel.
-3. **Authorize when prompted** — `cloudflared tunnel login` prints a URL to open in your browser.
-4. DNS records are created automatically via `cloudflared tunnel route dns`.
+   It installs nginx, configures it, and copies the site to `/var/www/ozzyhelix.xyz`.
+3. Open `http://<container-ip>/` from anything on the LAN.
 
-Files in `deploy/`:
-- `setup-debian.sh` — one-time installer (idempotent-ish, safe to re-run)
-- `cloudflared.yml.example` — reference tunnel config (the script generates the real one)
+### Adding a Cloudflare Tunnel later
 
-For a pre-existing nginx setup pointing at `$SITE_DIR`, just run the tunnel part: install `cloudflared`, create the tunnel, and start the service.
+Reference config lives in `deploy/cloudflared.yml.example`. After installing `cloudflared`, create a tunnel pointing at `http://localhost:80`, route DNS for your domain, and install it as a systemd service.
 
 ## License
 
