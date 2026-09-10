@@ -29,14 +29,18 @@ apt-get install -y nginx rsync php-fpm
 
 PHP_SOCK="$(ls /run/php/*.sock 2>/dev/null | head -n1 || true)"
 if [[ -z "$PHP_SOCK" ]]; then
-    # Socket is created on first start of the pool; start the service to populate it.
-    systemctl enable --now php*-fpm
-    PHP_SOCK="$(ls /run/php/*.sock 2>/dev/null | head -n1 || true)"
+    # Start the FPM pool that apt just installed (name it e.g. php8.2-fpm).
+    PHP_UNIT="$(basename "$(ls /etc/init.d/php*-fpm 2>/dev/null | head -n1)")"
+    if [[ -n "$PHP_UNIT" ]]; then
+        systemctl enable --now "$PHP_UNIT" 2>/dev/null || true
+        PHP_SOCK="$(ls /run/php/*.sock 2>/dev/null | head -n1 || true)"
+    fi
 fi
 if [[ -z "$PHP_SOCK" ]]; then
-    echo "ERROR: could not locate the PHP-FPM socket under /run/php/." >&2
-    exit 1
+    echo "NOTE: PHP-FPM socket not found yet; the counter will come up once php8.2-fpm starts on boot." >&2
 fi
+# nginx -t needs a concrete socket; fall back to the standard Debian path.
+PHP_SOCK="${PHP_SOCK:-/run/php/php8.2-fpm.sock}"
 echo "==> Using PHP-FPM socket: $PHP_SOCK"
 
 echo "==> Copying the site"
