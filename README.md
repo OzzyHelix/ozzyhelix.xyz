@@ -83,7 +83,10 @@ Serves the site from a container on your local network via nginx. Cloudflare Tun
    ```
    sudo bash /opt/ozzyhelix-site/deploy/setup-debian.sh
    ```
-   It installs nginx, configures it, and copies the site to `/var/www/ozzyhelix.xyz`.
+   It installs nginx + PHP-FPM, configures it, and copies the site to `/var/www/html` (your nginx web root). Pass a different destination as the second arg if yours differs:
+   ```
+   sudo bash /opt/ozzyhelix-site/deploy/setup-debian.sh /opt/ozzyhelix-site /var/www/html
+   ```
 3. Open `http://<container-ip>/` from anything on the LAN.
 
 ### Adding a Cloudflare Tunnel later

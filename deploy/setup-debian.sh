@@ -3,18 +3,20 @@
 # Serves the site on the local NAT network via nginx (no Cloudflare yet).
 #
 # Usage:
-#   bash setup-debian.sh [site-source-dir]
+#   bash setup-debian.sh                          # uses /opt/ozzyhelix-site -> /var/www/html
+#   bash setup-debian.sh SRC_DIR                  # copy SRC_DIR into /var/www/html
+#   bash setup-debian.sh SRC_DIR DEST_DIR         # copy SRC_DIR into DEST_DIR
 #
 # Examples:
-#   bash setup-debian.sh                          # uses /opt/ozzyhelix-site
-#   bash setup-debian.sh /var/www/ozzyhelix.xyz
+#   bash setup-debian.sh                          # default source /opt/ozzyhelix-site
+#   bash setup-debian.sh /opt/ozzyhelix-site /var/www/my-site
 #
 # Access the site afterwards at http://<container-ip>/
 
 set -euo pipefail
 
 SITE_SRC="${1:-/opt/ozzyhelix-site}"
-SITE_DIR="/var/www/ozzyhelix.xyz"
+SITE_DIR="${2:-/var/www/html}"
 
 if [[ $EUID -ne 0 ]]; then
     echo "Run as root: sudo bash setup-debian.sh" >&2
