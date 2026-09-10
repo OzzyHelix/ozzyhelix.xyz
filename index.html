@@ -98,7 +98,7 @@
 
     <footer class="footer">
       <div class="visitor-counter">
-        <img src="counter.php" alt="Visitor counter" width="280" height="88">
+        <img id="visitorCounter" src="counter.php" alt="Visitor counter" width="280" height="88">
       </div>
       <p>&copy; <span id="year"></span> Ozzy Helix. Licensed under <a href="LICENSE">GPL-2.0</a>.</p>
     </footer>
@@ -107,6 +107,14 @@
 
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
+
+    const counterImg = document.getElementById("visitorCounter");
+    if (counterImg) {
+      const refresh = () => {
+        counterImg.src = "counter.php?view=1&t=" + Date.now();
+      };
+      setInterval(refresh, 5000);
+    }
   </script>
 </body>
 </html>
