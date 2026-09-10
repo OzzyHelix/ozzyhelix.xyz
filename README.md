@@ -1,6 +1,6 @@
 # ozzyhelix.xyz
 
-Personal homepage for Ozzy Helix — dark, flat, and running on plain HTML/CSS + a little PHP behind nginx.
+Personal homepage for me — dark, flat, and running on plain HTML/CSS + a little PHP behind nginx.
 
 ## Files
 
