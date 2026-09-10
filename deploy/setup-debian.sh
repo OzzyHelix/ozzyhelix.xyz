@@ -101,7 +101,12 @@ EOF
 rm -f /etc/nginx/sites-enabled/default
 ln -sf /etc/nginx/sites-available/ozzyhelix.xyz /etc/nginx/sites-enabled/ozzyhelix.xyz
 nginx -t
-systemctl enable --now nginx
+systemctl enable nginx
+# Reload so a *running* nginx picks up the new config (enable alone won't).
+systemctl reload nginx || systemctl restart nginx
+
+echo "==> Verifying the counter is served through PHP"
+curl -sfL "http://127.0.0.1/counter.php?raw=1&view=1" || echo "  counter did not respond yet; reload nginx and retry: systemctl reload nginx"
 
 echo
 echo "Done. The site is served on the local NAT at http://<container-ip>/"
