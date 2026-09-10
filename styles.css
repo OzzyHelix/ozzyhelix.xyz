@@ -232,19 +232,6 @@ a:hover {
   margin-bottom: 10px;
 }
 
-.visitor-counter__text {
-  display: block;
-  margin-bottom: 8px;
-  color: var(--muted);
-}
-
-.visitor-counter__number {
-  font-family: "Courier New", monospace;
-  font-weight: bold;
-  color: #ffffff;
-  letter-spacing: 1px;
-}
-
 .visitor-counter img {
   max-width: 100%;
   height: auto;
