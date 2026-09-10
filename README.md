@@ -1,18 +1,44 @@
 # ozzyhelix.xyz
 
-Personal homepage for Ozzy Helix — dark, flat, and running on plain HTML/CSS behind nginx.
+Personal homepage for Ozzy Helix — dark, flat, and running on plain HTML/CSS + a little PHP behind nginx.
 
 ## Files
 
 ```
 index.html                  Home page
+timer.html                  Countdown timer page
+counter.php                 1990s-style visitor counter (odometer SVG image)
 styles.css                  Site-wide styles
-nginx.conf.example          Nginx site config (TLS, caching)
+timer.css                   Timer page styles
+nginx.conf.example          Nginx site config (TLS, caching, PHP-FPM)
 LICENSE                     GPL-2.0 license
 assets/
   Ozzy-anime-profile-picture.svg   Profile picture (header)
   moon2021.png                     Favicon
+  beeper.mp3                       Timer alarm
+data/
+  counter.txt                      Visitor counter state
+deploy/
+  setup-debian.sh                  One-shot nginx + PHP-FPM setup for Debian
+  cloudflared.yml.example          Cloudflare Tunnel reference config
 ```
+
+## Visitor counter
+
+The footer counter is `counter.php`, which runs behind PHP-FPM and stores its count in `data/counter.txt`. Each normal request to the image increments the count.
+
+- `counter.php` — odometer image (increments)
+- `counter.php?view=1` — odometer image, no increment
+- `counter.php?raw=1` — plain zero-padded number
+- `counter.php?reset=1` — zero the count
+- `counter.php?set=1234` — set the count
+
+Notes:
+
+- Requires nginx + PHP-FPM (`php-fpm` on Debian).
+- `deploy/setup-debian.sh` installs PHP-FPM and wires up the FastCGI socket automatically.
+- `data/counter.txt` must be writable by the web user (`www-data`). The setup script handles this.
+- The counter is reset by `?reset=1`; redeploying via `rsync -a` (no `--delete`) preserves the live count.
 
 ## Deployment
 

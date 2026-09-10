@@ -228,6 +228,15 @@ a:hover {
   margin-top: 8px;
 }
 
+.visitor-counter {
+  margin-bottom: 10px;
+}
+
+.visitor-counter img {
+  max-width: 100%;
+  height: auto;
+}
+
 .footer p {
   margin-bottom: 4px;
 }

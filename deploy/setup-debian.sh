@@ -21,18 +21,34 @@ if [[ $EUID -ne 0 ]]; then
     exit 1
 fi
 
-echo "==> Installing nginx"
+echo "==> Installing nginx and PHP-FPM"
 apt-get update
-apt-get install -y nginx rsync
+apt-get install -y nginx rsync php-fpm
+
+PHP_SOCK="$(ls /run/php/*.sock 2>/dev/null | head -n1 || true)"
+if [[ -z "$PHP_SOCK" ]]; then
+    # Socket is created on first start of the pool; start the service to populate it.
+    systemctl enable --now php*-fpm
+    PHP_SOCK="$(ls /run/php/*.sock 2>/dev/null | head -n1 || true)"
+fi
+if [[ -z "$PHP_SOCK" ]]; then
+    echo "ERROR: could not locate the PHP-FPM socket under /run/php/." >&2
+    exit 1
+fi
+echo "==> Using PHP-FPM socket: $PHP_SOCK"
 
 echo "==> Copying the site"
 mkdir -p "$SITE_DIR"
 if [[ -d "$SITE_SRC" ]]; then
-    rsync -a --delete "$SITE_SRC"/ "$SITE_DIR"/
+    rsync -a "$SITE_SRC"/ "$SITE_DIR"/
     chown -R www-data:www-data "$SITE_DIR"
 else
     echo "WARNING: site source $SITE_SRC not found. Drop your files into $SITE_DIR manually."
 fi
+# Make sure the counter has a place to store its count after redeploys
+mkdir -p "$SITE_DIR/data"
+touch "$SITE_DIR/data/counter.txt"
+chown -R www-data:www-data "$SITE_DIR/data"
 
 echo "==> Writing nginx config"
 cat > /etc/nginx/sites-available/ozzyhelix.xyz <<EOF
@@ -43,13 +59,25 @@ server {
     root $SITE_DIR;
     index index.html;
 
-    location ~* \.(css|js|svg|woff2?|png|jpg|jpeg|gif|webp)$ {
+    location ~* \.(css|js|svg|woff2?|png|jpg|jpeg|gif|webp|mp3|ogg|wav)$ {
         expires 30d;
         add_header Cache-Control "public, immutable";
     }
 
-    location = /index.html {
+    location ~* \.html$ {
         add_header Cache-Control "no-store, no-cache, must-revalidate";
+    }
+
+    # Keep the counter's state file private
+    location ^~ /data/ {
+        deny all;
+        return 404;
+    }
+
+    # PHP pages (visitor counter)
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:$PHP_SOCK;
     }
 
     # Serve the license inline instead of downloading it

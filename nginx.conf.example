@@ -15,14 +15,26 @@ server {
     index index.html;
 
     # Long-lived caching for static assets
-    location ~* \.(css|js|svg|woff2?|png|jpg|jpeg|gif|webp)$ {
+    location ~* \.(css|js|svg|woff2?|png|jpg|jpeg|gif|webp|mp3|ogg|wav)$ {
         expires 30d;
         add_header Cache-Control "public, immutable";
     }
 
-    # Never cache the HTML itself
-    location = /index.html {
+    # Never cache HTML pages (index.html, timer.html, ...)
+    location ~* \.html$ {
         add_header Cache-Control "no-store, no-cache, must-revalidate";
+    }
+
+    # Keep the counter's state file private
+    location ^~ /data/ {
+        deny all;
+        return 404;
+    }
+
+    # PHP pages (visitor counter)
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/php-fpm.sock;
     }
 
     # Serve the license inline instead of downloading it

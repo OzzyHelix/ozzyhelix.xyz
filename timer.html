@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A simple countdown timer on Ozzy Helix's homepage.">
+  <title>Timer &middot; Ozzy Helix</title>
+  <link rel="icon" type="image/png" href="assets/moon2021.png">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="timer.css">
+</head>
+<body>
+
+  <div class="construction-bar">Site Under Construction</div>
+
+  <div class="page">
+
+    <header class="header">
+      <div class="logo">
+        <img class="logo__img" src="assets/Ozzy-anime-profile-picture.svg" alt="Ozzy Helix profile picture">
+        <span class="logo__main">Ozzy<span class="logo__hl">Helix</span></span>
+        <span class="logo__tag">the one and only homepage on the web</span>
+      </div>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="https://github.com/OzzyHelix?tab=repositories" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://bsky.app/profile/ozzyhelix.bsky.social" target="_blank" rel="noopener">BlueSky</a>
+      </nav>
+    </header>
+
+    <main class="panel timer-panel">
+
+      <h2 class="section__title">Countdown Timer</h2>
+
+      <div class="timer-display" id="display" aria-live="polite">05:00</div>
+
+      <div class="preset-row" id="presets">
+        <button class="badge badge--btn" data-minutes="1">1 min</button>
+        <button class="badge badge--btn" data-minutes="5">5 min</button>
+        <button class="badge badge--btn" data-minutes="10">10 min</button>
+        <button class="badge badge--btn" data-minutes="15">15 min</button>
+        <button class="badge badge--btn" data-minutes="25">25 min</button>
+        <button class="badge badge--btn" data-minutes="60">60 min</button>
+      </div>
+
+      <div class="custom-row">
+        <input class="custom-input" id="customMin" type="number" min="0" max="999" step="1" value="5" placeholder="Min">
+        <span class="custom-label">:</span>
+        <input class="custom-input" id="customSec" type="number" min="0" max="59" step="1" value="0" placeholder="Sec">
+        <button class="badge badge--btn" id="setCustom">Set</button>
+      </div>
+
+      <div class="controls">
+        <button class="timer-btn" id="startBtn">Start</button>
+        <button class="timer-btn timer-btn--ghost" id="resetBtn">Reset</button>
+      </div>
+
+      <p class="timer-note" id="status">Ready. Pick a preset or enter a custom time.</p>
+
+      <p class="back-link">&#8592; <a href="index.html">back to homepage</a></p>
+
+    </main>
+
+    <footer class="footer">
+      <p>&copy; <span id="year"></span> Ozzy Helix. Licensed under <a href="LICENSE">GPL-2.0</a>.</p>
+    </footer>
+
+  </div>
+
+  <script>
+    const display = document.getElementById("display");
+    const status = document.getElementById("status");
+    const startBtn = document.getElementById("startBtn");
+    const resetBtn = document.getElementById("resetBtn");
+    const customMin = document.getElementById("customMin");
+    const customSec = document.getElementById("customSec");
+
+    const alarm = new Audio("assets/beeper.mp3");
+    alarm.preload = "auto";
+
+    function unlockAudio() {
+      try {
+        alarm.muted = true;
+        alarm.play().then(function () {
+          alarm.pause();
+          alarm.currentTime = 0;
+          alarm.muted = false;
+        }).catch(function () {});
+      } catch (e) {}
+    }
+
+    const DEFAULT_SECONDS = 5 * 60;
+
+    let totalSeconds = DEFAULT_SECONDS;
+    let remaining = DEFAULT_SECONDS;
+    let intervalId = null;
+    let running = false;
+
+    function formatTime(s) {
+      const m = String(Math.floor(s / 60)).padStart(2, "0");
+      const sec = String(s % 60).padStart(2, "0");
+      return m + ":" + sec;
+    }
+
+    function render() {
+      display.textContent = formatTime(remaining);
+      display.classList.toggle("timer-display--warning", remaining <= 10 && remaining > 0);
+      const pct = (remaining / totalSeconds) * 100;
+      display.style.setProperty("--progress", pct + "%");
+    }
+
+    function beep() {
+      try {
+        alarm.currentTime = 0;
+        alarm.play().catch(function () {});
+      } catch (e) {
+        /* audio not available */
+      }
+    }
+
+    function finish() {
+      running = false;
+      clearInterval(intervalId);
+      intervalId = null;
+      remaining = 0;
+      render();
+      status.textContent = "Time's up!";
+      document.title = "Time's up! - Timer";
+      beep();
+      navigator.vibrate && navigator.vibrate([200, 100, 200]);
+    }
+
+    function stop() {
+      running = false;
+      clearInterval(intervalId);
+      intervalId = null;
+      startBtn.textContent = "Start";
+      status.textContent = "Paused.";
+      document.title = "Timer - Paused";
+    }
+
+    function setTime(seconds) {
+      totalSeconds = seconds;
+      remaining = seconds;
+      render();
+      status.textContent = "Ready.";
+      document.title = "Timer";
+    }
+
+    function parseCustom() {
+      let m = parseInt(customMin.value, 10);
+      let s = parseInt(customSec.value, 10);
+      if (isNaN(m)) m = 0;
+      if (isNaN(s)) s = 0;
+      m = Math.max(0, Math.min(m, 999));
+      s = Math.max(0, Math.min(s, 59));
+      customMin.value = String(m);
+      customSec.value = String(s).padStart(2, "0");
+      return m * 60 + s;
+    }
+
+    document.querySelectorAll("#presets .badge--btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        if (running) stop();
+        setTime(parseInt(btn.dataset.minutes, 10) * 60);
+      });
+    });
+
+    document.getElementById("setCustom").addEventListener("click", () => {
+      if (running) stop();
+      const seconds = parseCustom();
+      if (seconds <= 0) {
+        status.textContent = "Enter a time greater than zero.";
+        return;
+      }
+      setTime(seconds);
+    });
+
+    startBtn.addEventListener("click", () => {
+      unlockAudio();
+      if (remaining <= 0) setTime(totalSeconds === 0 ? DEFAULT_SECONDS : totalSeconds);
+      if (running) {
+        stop();
+        return;
+      }
+      running = true;
+      startBtn.textContent = "Pause";
+      status.textContent = "Running...";
+      document.title = formatTime(remaining) + " - Timer";
+      intervalId = setInterval(() => {
+        remaining -= 1;
+        render();
+        document.title = formatTime(remaining) + " - Timer";
+        if (remaining <= 0) finish();
+      }, 1000);
+    });
+
+    resetBtn.addEventListener("click", () => {
+      stop();
+      setTime(totalSeconds);
+    });
+
+    customMin.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") document.getElementById("setCustom").click();
+    });
+    customSec.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") document.getElementById("setCustom").click();
+    });
+
+    render();
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
