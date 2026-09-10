@@ -96,6 +96,7 @@
 
     <footer class="footer">
       <div class="visitor-counter">
+        <p class="visitor-counter__text">you are visitor number <span class="visitor-counter__number" id="visitorCount">0000000</span></p>
         <img src="counter.php" alt="Visitor counter" width="280" height="88">
       </div>
       <p>&copy; <span id="year"></span> Ozzy Helix. Licensed under <a href="LICENSE">GPL-2.0</a>.</p>
@@ -105,6 +106,10 @@
 
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
+    fetch("counter.php?raw=1&view=1")
+      .then((res) => res.text())
+      .then((n) => (document.getElementById("visitorCount").textContent = n))
+      .catch(() => {});
   </script>
 </body>
 </html>
